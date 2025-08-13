@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
 import { Switch } from "@mui/material";
 import { Autocomplete } from "@mui/material";
+import Alert from "@mui/material/Alert";
 
 import { db, collection, addDoc } from "../firebase";
 import { useRegistering } from "../contexts/registeringContext";
@@ -57,6 +58,7 @@ const TelaCadastro: React.FC = () => {
   ]);
   const { setIsRegistering } = useRegistering();
   const [activeStep, setActiveStep] = React.useState(0);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     setProgress(
@@ -68,7 +70,13 @@ const TelaCadastro: React.FC = () => {
 
   const handleNext = () => {
     if (activeStep !== steps.length - 1) {
+      if (!titulo || !email) {
+        setShowAlert(true);
+        // alert("Por favor, preencha todos os campos antes de continuar.");
+        return;
+      }
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setShowAlert(false);
     }
   };
   const handleBack = () => {
@@ -90,7 +98,7 @@ const TelaCadastro: React.FC = () => {
       });
 
       if (!titulo || !email || !departamento) {
-        alert("Por favor, preencha todos os campos obrigatórios.");
+        setShowAlert(true);
         return;
       }
 
@@ -220,6 +228,11 @@ const TelaCadastro: React.FC = () => {
                 }}
               />
               Ativar ao criar
+              {showAlert && (
+                <Alert severity="error" onClose={() => setShowAlert(false)}>
+                  Por favor, preencha todos os campos antes de continuar.
+                </Alert>
+              )}
             </Box>
           </StepContent>
         </Step>
@@ -262,6 +275,11 @@ const TelaCadastro: React.FC = () => {
                   noOptionsText="Nenhum departamento encontrado"
                 />
               </div>
+              {showAlert && (
+                <Alert severity="error" onClose={() => setShowAlert(false)}>
+                  Por favor, preencha o campo antes de continuar.
+                </Alert>
+              )}
             </Box>
           </StepContent>
         </Step>
@@ -284,14 +302,14 @@ const TelaCadastro: React.FC = () => {
             variant="contained"
             style={styles.telaCadastroButton}
             onClick={() => {
-              activeStep !== steps.length - 1 ? handleNext() : handleSubmit();
+              activeStep !== steps.length - 2 ? handleNext() : handleSubmit();
             }}
             sx={{
               mt: 1,
               mr: 1,
             }}
           >
-            {activeStep === steps.length - 1 ? "Finalizar" : "Próximo"}
+            {activeStep === steps.length - 2 ? "Finalizar" : "Próximo"}
           </Button>
         </div>
       </div>
