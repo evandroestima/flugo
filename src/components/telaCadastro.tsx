@@ -12,7 +12,6 @@ import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
 import { Switch } from "@mui/material";
 import { Autocomplete } from "@mui/material";
-import Alert from "@mui/material/Alert";
 
 import { db, collection, addDoc } from "../firebase";
 import { useRegistering } from "../contexts/registeringContext";
