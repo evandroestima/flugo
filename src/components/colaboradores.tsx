@@ -42,7 +42,7 @@ function getComparator<Key extends keyof any>(
 
 // Define table header columns
 interface HeadCell {
-  id: keyof (typeof rows)[0];
+  id: string;
   label: string;
   align: "left" | "right";
 }
@@ -55,18 +55,14 @@ const headCells: readonly HeadCell[] = [
 ];
 
 function EnhancedTableHead(props: {
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof (typeof rows)[0]
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
   order: Order;
   orderBy: string;
 }) {
   const { order, orderBy, onRequestSort } = props;
 
   const createSortHandler =
-    (property: keyof (typeof rows)[0]) =>
-    (event: React.MouseEvent<unknown>) => {
+    (property: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -75,7 +71,7 @@ function EnhancedTableHead(props: {
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
-            key={headCell.id}
+            key={headCell.id as React.Key}
             align={headCell.align}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -100,14 +96,14 @@ function EnhancedTableHead(props: {
 
 export default function Colaboradores() {
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof (typeof rows)[0]>("name");
-  const [tableData, setTableData] = useState();
+  const [orderBy, setOrderBy] = useState<string>("name");
+  //   const [tableData, setTableData] = useState();
   const [rows, setRows] = useState<any[]>([]);
   const { isRegistering, setIsRegistering } = useRegistering();
 
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof (typeof rows)[0]
+    _event: React.MouseEvent<unknown>,
+    property: string
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -119,7 +115,7 @@ export default function Colaboradores() {
       const querySnapshot = await getDocs(collection(db, "colaboradores"));
       const colaboradoresData = querySnapshot.docs.map((doc) => doc.data());
       setRows(
-        colaboradoresData.map((data, index) => ({
+        colaboradoresData.map((data) => ({
           name: data.titulo,
           email: data.email,
           dpto: data.departamento.label,

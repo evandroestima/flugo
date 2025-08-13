@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import LinearProgress, {
   type LinearProgressProps,
 } from "@mui/material/LinearProgress";
@@ -9,11 +9,11 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import TextField from "@mui/material/TextField";
-import { Alert, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { Switch } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 
-import { db, collection, addDoc, getDocs } from "../firebase";
+import { db, collection, addDoc } from "../firebase";
 import { useRegistering } from "../contexts/registeringContext";
 
 function LinearProgressWithLabel(
@@ -44,11 +44,11 @@ const departamentosMock = [
 
 const TelaCadastro: React.FC = () => {
   const [progress, setProgress] = useState(0);
-  const [titulo, setTitulo] = useState();
-  const [email, setEmail] = useState();
+  const [titulo, setTitulo] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [departamento, setDepartamento] = useState();
   const [activateSwitch, setActivateSwitch] = useState(true);
-  const [steps, setSteps] = useState([
+  const [steps] = useState([
     {
       label: "Informações Pessoais",
       description: "Preencha seus dados pessoais.",
@@ -76,10 +76,6 @@ const TelaCadastro: React.FC = () => {
     if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   const handleSubmit = async () => {
@@ -166,7 +162,7 @@ const TelaCadastro: React.FC = () => {
                     <TextField {...params} label="Departamento" />
                   )}
                   value={departamento}
-                  onChange={(event: any, newValue: any) => {
+                  onChange={(_event: any, newValue: any) => {
                     setDepartamento(newValue);
                   }}
                   noOptionsText="Nenhum departamento encontrado"
