@@ -6,12 +6,11 @@ import Colaboradores from "./components/colaboradores";
 import Demo from "./components/demo";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
+import aang from "./assets/Aang.webp";
 function App() {
   const [shownComponent, setShownComponent] = useState<
     "Colaboradores" | "Demo"
   >("Colaboradores");
-
-  console.log("App component rendered", shownComponent);
 
   return (
     <div className="app-container">
@@ -51,6 +50,16 @@ function App() {
           </Stack>
         </div>
       </Drawer>
+      <Avatar
+        alt="Flugo Logo"
+        src={aang}
+        className="avatar"
+        sx={{
+          position: "absolute",
+          top: 10,
+          right: 65,
+        }}
+      ></Avatar>
 
       <div className="main-content">
         {shownComponent === "Colaboradores" && <Colaboradores />}

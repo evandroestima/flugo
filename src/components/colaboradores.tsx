@@ -9,7 +9,7 @@ import Paper from "@mui/material/Paper";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { visuallyHidden } from "@mui/utils";
 import Box from "@mui/material/Box";
-import { Avatar } from "@mui/material";
+import { Avatar, Chip } from "@mui/material";
 import TelaCadastro from "./telaCadastro";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../firebase";
@@ -68,7 +68,14 @@ function EnhancedTableHead(props: {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow
+        sx={{
+          "& th": {
+            backgroundColor: "#f5f5f5",
+            fontWeight: "bold",
+          },
+        }}
+      >
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id as React.Key}
@@ -149,8 +156,17 @@ export default function Colaboradores() {
               Novo Colaborador
             </button>
           </div>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableContainer
+            component={Paper}
+            sx={{
+              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+              borderRadius: "12px",
+            }}
+          >
+            <Table
+              sx={{ minWidth: 650, borderRadius: "70px" }}
+              aria-label="simple table"
+            >
               <EnhancedTableHead
                 order={order}
                 orderBy={orderBy}
@@ -179,7 +195,13 @@ export default function Colaboradores() {
                       </TableCell>
                       <TableCell align="right">{row.email}</TableCell>
                       <TableCell align="right">{row.dpto}</TableCell>
-                      <TableCell align="right">{row.ativo}</TableCell>
+                      <TableCell align="right">
+                        <Chip
+                          label={row.ativo === "Sim" ? "ativo" : "inativo"}
+                          color={row.ativo === "Sim" ? "success" : "error"}
+                          size="small"
+                        />
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
@@ -194,7 +216,7 @@ export default function Colaboradores() {
 const styles = {
   colaboradoresContainer: {
     padding: "20px",
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
   },
 
   colaboradoresHeader: {
@@ -211,7 +233,7 @@ const styles = {
     backgroundColor: "#25c362",
     color: "#fff",
     border: "none",
-    borderRadius: "4px",
+    borderRadius: "10px",
     cursor: "pointer",
   },
 };

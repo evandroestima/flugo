@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
 import { Switch } from "@mui/material";
 import { Autocomplete } from "@mui/material";
+import Alert from "@mui/material/Alert";
 
 import { db, collection, addDoc } from "../firebase";
 import { useRegistering } from "../contexts/registeringContext";
@@ -51,10 +52,9 @@ const TelaCadastro: React.FC = () => {
   const [steps] = useState([
     {
       label: "Informações Pessoais",
-      description: "Preencha seus dados pessoais.",
     },
-    { label: "Contato", description: "Informe seu e-mail e telefone." },
-    { label: "Departamento", description: "Selecione o departamento." },
+    { label: "Informações profissionais" },
+    { label: "Departamento" },
   ]);
   const { setIsRegistering } = useRegistering();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -76,20 +76,26 @@ const TelaCadastro: React.FC = () => {
     if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
+    if (activeStep === 0) {
+      setIsRegistering(false);
+    }
   };
 
   const handleSubmit = async () => {
     try {
-      //   if (titulo || email || departamento === undefined) {
-      //     console.log("entrou aqui");
-      //     return (
-      //       <Alert severity="error">
-      //         Preencha todos os campos antes de continuar.
-      //       </Alert>
-      //     );
-      //   }
+      console.log("Submitting:", {
+        titulo,
+        email,
+        departamento,
+        ativo: activateSwitch,
+      });
 
-      const docRef = await addDoc(collection(db, "colaboradores"), {
+      if (!titulo || !email || !departamento) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      await addDoc(collection(db, "colaboradores"), {
         titulo,
         email,
         departamento: departamento,
@@ -98,7 +104,6 @@ const TelaCadastro: React.FC = () => {
 
       setIsRegistering(false);
       setActiveStep(0);
-      console.log("Document written with ID: ", docRef.id);
       //   handleNext();
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -110,13 +115,46 @@ const TelaCadastro: React.FC = () => {
       <div style={styles.cadastroHeader}>
         Colaboradores . Cadastrar Colaborador
       </div>
-      <LinearProgressWithLabel variant="determinate" value={progress} />
+      <LinearProgressWithLabel
+        variant="determinate"
+        value={progress}
+        sx={{
+          backgroundColor: "#c5daceff",
+          "& .MuiLinearProgress-bar": {
+            backgroundColor: "#25c362", // The color of the progress bar
+          },
+        }}
+      />
 
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper
+        activeStep={activeStep}
+        orientation="vertical"
+        sx={{
+          // Target the step icon
+          "& .MuiStepIcon-root.MuiStepIcon-active": {
+            color: "#a4b4aaff",
+          },
+          // Target the completed step icon
+          "& .MuiStepIcon-root.Mui-completed": {
+            color: "#25c362",
+          },
+          // Target the connector line
+          "& .MuiStepConnector-line": {
+            borderColor: "#25c362",
+          },
+          "& .Mui-active": {
+            color: "#25c362",
+          },
+        }}
+      >
         <Step key={steps[0].label}>
-          <StepLabel>{steps[0].label}</StepLabel>
+          <StepLabel>
+            <div style={styles.stepLabelContainer}>
+              {steps[0].label}
+              <h2>Informações básicas</h2>
+            </div>
+          </StepLabel>
           <StepContent>
-            <Typography>{steps[0].description}</Typography>
             <Box sx={{ mb: 2 }}>
               <div>
                 <TextField
@@ -126,6 +164,20 @@ const TelaCadastro: React.FC = () => {
                   margin="normal"
                   fullWidth
                   required
+                  // color="success"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "#25c362", // Default border color
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#1ba04eff", // Hover border color
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#25c362", // Focused border color
+                      },
+                    },
+                  }}
                 />
               </div>
               <div>
@@ -136,28 +188,71 @@ const TelaCadastro: React.FC = () => {
                   margin="normal"
                   fullWidth
                   required
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "#25c362", // Default border color
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#1ba04eff", // Hover border color
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#25c362", // Focused border color
+                      },
+                    },
+                  }}
                 />
               </div>
               <Switch
                 checked={activateSwitch}
                 onChange={() => setActivateSwitch(!activateSwitch)}
                 inputProps={{ "aria-label": "controlled" }}
+                sx={{
+                  "& .MuiSwitch-thumb": {
+                    backgroundColor: "#25c362", // Thumb color
+                  },
+                  "& .MuiSwitch-track": {
+                    backgroundColor: "#25c362", // Track color
+                  },
+                  "& .MuiSwitch-root": {
+                    color: "#25c362", // Track color when checked
+                    backgroundColor: "#25c362", // Color when checked
+                  },
+                }}
               />
               Ativar ao criar
             </Box>
           </StepContent>
         </Step>
-        {/* TODO: TIRAR O BOTÃO DE CONTINUAR DO LOCAL E BOTAR GLOBAL. CONTROLAR PELO STEP QUE TÁ XD */}
         <Step>
-          <StepLabel>{steps[1].label}</StepLabel>
+          <StepLabel>
+            <div style={styles.stepLabelContainer}>
+              {steps[1].label}
+              <h2>Informações profissionais</h2>
+            </div>
+          </StepLabel>
           <StepContent>
-            <Typography>{steps[1].description}</Typography>
             <Box sx={{ mb: 2 }}>
               <div>
                 <Autocomplete
                   disablePortal
                   options={departamentosMock}
-                  sx={{ width: 300, marginTop: 2, marginBottom: 2 }}
+                  sx={{
+                    width: 300,
+                    marginTop: 2,
+                    marginBottom: 2,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "#25c362", // Default border color
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "#1ba04eff", // Hover border color
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#25c362", // Focused border color
+                      },
+                    },
+                  }}
                   renderInput={(params) => (
                     <TextField {...params} label="Departamento" />
                   )}
@@ -172,27 +267,34 @@ const TelaCadastro: React.FC = () => {
           </StepContent>
         </Step>
       </Stepper>
-      <div>
-        <Button
-          variant="contained"
-          onClick={() => {
-            activeStep !== steps.length - 1 ? handleNext() : handleSubmit();
-          }}
-          sx={{ mt: 1, mr: 1 }}
-        >
-          {activeStep === steps.length - 1 ? "Finalizar" : "Continuar"}
-        </Button>
-      </div>
-      <div>
-        <Button
-          variant="contained"
-          onClick={() => {
-            handleBack();
-          }}
-          sx={{ mt: 1, mr: 1 }}
-        >
-          voltar
-        </Button>
+      <div style={styles.buttonContainer}>
+        <div>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleBack();
+            }}
+            sx={{ mt: 1, mr: 1 }}
+            style={styles.telaCadastroButton}
+          >
+            voltar
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="contained"
+            style={styles.telaCadastroButton}
+            onClick={() => {
+              activeStep !== steps.length - 1 ? handleNext() : handleSubmit();
+            }}
+            sx={{
+              mt: 1,
+              mr: 1,
+            }}
+          >
+            {activeStep === steps.length - 1 ? "Finalizar" : "Próximo"}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -208,6 +310,22 @@ const styles = {
     fontSize: "16px",
     fontWeight: "bold",
     marginBottom: "20px",
+  },
+  telaCadastroButton: {
+    backgroundColor: "#25c362",
+    height: "50px",
+    borderRadius: "10px",
+  },
+  stepLabelContainer: {
+    color: "#746565ff",
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "20px",
   },
 
   colaboradoresButton: {

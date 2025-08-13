@@ -1,8 +1,8 @@
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .drawer-content {
@@ -27,4 +27,8 @@
   flex-grow: 1;
   padding: 20px;
   color: black;
+}
+
+.avatar {
+  border: 2px solid #ccc;
 }
