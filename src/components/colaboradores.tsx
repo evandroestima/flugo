@@ -178,7 +178,7 @@ export default function Colaboradores() {
                   .sort(getComparator(order, orderBy))
                   .map((row, index) => (
                     <TableRow
-                      key={row.name}
+                      key={row.name + index}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell
